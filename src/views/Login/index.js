@@ -1,8 +1,7 @@
 import React from 'react';
-import GoogleButton from '../GoogleButton';
 
 function Login(props) {
-  return <GoogleButton />;
+  return <button>Click here to login</button>;
 }
 
 export default Login;

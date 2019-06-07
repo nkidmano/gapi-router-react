@@ -1,26 +1,45 @@
-import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import React, { Fragment, useState, useEffect } from 'react';
+import {
+  BrowserRouter as Router,
+  Route,
+  Redirect,
+  Switch,
+} from 'react-router-dom';
 
-import { oauth2Client } from '../apis/google';
-
-import Login from './Login';
-import User from './User';
-import Admin from './Admin';
+import Login from '../views/Login';
+import User from '../views/User';
+import Admin from '../views/Admin';
 import NavBar from './NavBar';
 
+import {
+  notLoggedInRoutes,
+  adminRoutes,
+  userRoutes,
+} from '../constants/routes';
+
 function App() {
+  const [routes, setRoutes] = useState(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(true);
+
   useEffect(() => {
-    console.log(oauth2Client);
-  });
+    const routes = isAuthenticated ? userRoutes : notLoggedInRoutes;
+    setRoutes(routes);
+  }, [isAuthenticated]);
+
   return (
-    <Router>
-      <NavBar />
-      <Switch>
-        <Route exact path="/login" component={Login} />
-        <Route exact path="/user" component={Admin} />
-        <Route exact path="/admin" component={User} />
-      </Switch>
-    </Router>
+    <Fragment>
+      {routes && (
+        <Router>
+          <NavBar />
+          <Switch>
+            {routes.map((route, index) => (
+              <Route key={index} {...route} />
+            ))}
+            <Redirect to={isAuthenticated ? '/' : '/login'} />
+          </Switch>
+        </Router>
+      )}
+    </Fragment>
   );
 }
 
